@@ -1,0 +1,25 @@
+name: Deploy to Home Server
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy with Docker
+        run: |
+          cd ${{ github.workspace }}
+          docker compose down
+          docker compose build --no-cache
+          docker compose up -d
+
+      - name: Verify running
+        run: |
+          sleep 3
+          docker logs test-deploy --tail 5
